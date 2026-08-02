@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Latest Run – Stats Screen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nova+Square&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #000000;
+    --ink-soft: #333333;
+    --line: #D2D2D2;
+    --accent: #FF6666;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #ECECEC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .screen-wrapper {
+    width: 390px;
+    height: 693.33px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0px 10px 40px rgba(0,0,0,0.15);
+  }
+
+  .screen {
+    width: 1080px;
+    height: 1920px;
+    position: relative;
+    background: #ffffff;
+    overflow: hidden;
+    border-radius: 8px;
+    transform: scale(0.36111);
+    transform-origin: top left;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    width: 1080px;
+    height: 120.59px;
+    position: absolute;
+    left: 0; top: 0;
+    background: #ffffff;
+    box-shadow: 0px 4px 50px rgba(0,0,0,0.10);
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    outline: 2px solid var(--line);
+  }
+
+  .label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    color: var(--ink-soft);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .value {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+    font-family: 'Nova Square', sans-serif;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .run-date {
+    left: 395px; top: 31px;
+    font-size: 40px;
+    line-height: 60px;
+  }
+
+  .latest-run-label {
+    left: 69px; top: 29px;
+    font-size: 45px;
+    line-height: 67.5px;
+  }
+
+  /* ---------- Hero black card (map / activity area) ---------- */
+  .activity-card {
+    width: 950px;
+    height: 950px;
+    position: absolute;
+    left: 72px; top: 678px;
+    background: #000000;
+    box-shadow: 0px 4px 50px rgba(0,0,0,0.10);
+    border-radius: 30px;
+    outline: 2px solid var(--line);
+  }
+
+  .duration-label { left: 443px; top: 230px; font-size: 40px; line-height: 60px; }
+  .duration-value {
+    width: 503px; left: 296px; top: 256px;
+    font-size: 100px; line-height: 150px;
+  }
+
+  .pace-label    { left: 182px; top: 553px; font-size: 30px; line-height: 45px; }
+  .pace-value    { width: 214px; left: 114px; top: 397px; font-size: 70px; line-height: 105px; }
+
+  .distance-label{ left: 432px; top: 553px; font-size: 30px; line-height: 45px; }
+  .distance-value{ width: 214px; left: 440px; top: 397px; font-size: 70px; line-height: 105px; }
+
+  .kcal-label    { left: 833px; top: 553px; font-size: 30px; line-height: 45px; }
+  .kcal-value    { width: 214px; left: 766px; top: 397px; font-size: 70px; line-height: 105px; }
+
+  .more-link     { left: 864px; top: 624px; font-size: 30px; line-height: 45px; cursor: pointer; }
+
+  /* ---------- Heart-rate gauge ---------- */
+  .hr-gauge {
+    width: 300px; height: 300px;
+    position: absolute;
+    left: 662px; top: 1266px;
+    background: #ffffff;
+    border-radius: 9999px;
+    box-shadow: 0px 4px 50px rgba(0,0,0,0.10);
+    outline: 7px solid var(--line);
+  }
+
+  .hr-fill {
+    width: 258.33px; height: 260px;
+    position: absolute;
+    left: 677.61px; top: 1286px;
+    background: var(--accent);
+    border-radius: 9999px;
+  }
+
+  .hr-inner {
+    width: 210px; height: 210px;
+    position: absolute;
+    left: 701.775px; top: 1311px;
+    background: #ffffff;
+    border-radius: 9999px;
+  }
+
+  .hr-label-bg {
+    width: 130px; height: 81px;
+    position: absolute;
+    left: 747px; top: 1284px;
+    background: #ffffff;
+  }
+
+  .hr-heading {
+    width: 170px; height: 74px;
+    position: absolute;
+    left: 727px; top: 1291px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 34px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bpm-value {
+    width: 214px; left: 705px; top: 1371px;
+    font-size: 60px; line-height: 90px;
+  }
+
+  .bpm-label {
+    width: 118px; height: 92px;
+    position: absolute;
+    left: 753px; top: 1425px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 33px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ---------- Bottom nav ---------- */
+  .bottom-nav {
+    width: 1000px; height: 170px;
+    position: absolute;
+    left: 47px; top: 1700px;
+    background: #ffffff;
+    box-shadow: 0px 4px 50px rgba(0,0,0,0.10);
+    border-radius: 30px;
+    outline: 2px solid var(--line);
+  }
+
+  .nav-icon {
+    position: absolute;
+    object-fit: contain;
+  }
+
+  /* Order left to right: Team, Home, Running, Stats, Profile */
+  .nav-icon--1 { width: 87.5px; height: 75px;  left: 140.25px; top: 1747.51px; }   /* Team */
+  .nav-icon--2 { width: 81.13px; height: 99.84px; left: 325px; top: 1735px; }      /* Home */
+  .nav-icon--3 { width: 75px; height: 79.16px; left: 509.5px; top: 1743.35px; }    /* Running */
+  .nav-icon--4 { width: 91.67px; height: 91.67px; left: 692.17px; top: 1739.17px; }/* Stats */
+  .nav-icon--5 { width: 75px; height: 75px; left: 891.5px; top: 1747.5px; }        /* Profile */
+
+</style>
+</head>
+<body>
+
+  <div class="screen-wrapper">
+  <div class="screen">
+
+    <!-- Top bar -->
+    <div class="topbar"></div>
+    <div class="label latest-run-label">LATEST RUN :</div>
+    <div class="value run-date">00/00/00</div>
+
+    <!-- Activity card -->
+    <div class="activity-card"></div>
+    <div class="label duration-label">DURATION</div>
+    <div class="value duration-value">00:00:00</div>
+
+    <div class="label pace-label">PACE</div>
+    <div class="value pace-value">00:00</div>
+
+    <div class="label distance-label">DISTANCE (KM)</div>
+    <div class="value distance-value">00:00</div>
+
+    <div class="label kcal-label">KCAL</div>
+    <div class="value kcal-value">0</div>
+
+    <a href="Information.html" class="label more-link" style="text-decoration: none;">More....</a>
+
+    <!-- Heart-rate gauge -->
+    <div class="hr-gauge"></div>
+    <div class="hr-fill"></div>
+    <div class="hr-inner"></div>
+    <div class="hr-label-bg"></div>
+    <div class="hr-heading">HEART<br/>RATE</div>
+    <div class="value bpm-value">0</div>
+    <div class="bpm-label">BPM</div>
+
+    <!-- Bottom navigation (Team, Home, Running, Stats, Profile) -->
+    <div class="bottom-nav"></div>
+    <img class="nav-icon nav-icon--1" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik01MCAxMi41MTI1QzQ4LjM2MDEgMTIuNTEyNSA0Ni43MzYzIDEyLjgzNTQgNDUuMjIxMiAxMy40NjNDNDMuNzA2MiAxNC4wOTA2IDQyLjMyOTYgMTUuMDEwNCA0MS4xNyAxNi4xN0M0MC4wMTA0IDE3LjMyOTUgMzkuMDkwNiAxOC43MDYxIDM4LjQ2MzEgMjAuMjIxMkMzNy44MzU1IDIxLjczNjIgMzcuNTEyNSAyMy4zNjAxIDM3LjUxMjUgMjVDMzcuNTEyNSAyNi42Mzk4IDM3LjgzNTUgMjguMjYzNyAzOC40NjMxIDI5Ljc3ODdDMzkuMDkwNiAzMS4yOTM4IDQwLjAxMDQgMzIuNjcwNCA0MS4xNyAzMy44Mjk5QzQyLjMyOTYgMzQuOTg5NSA0My43MDYyIDM1LjkwOTMgNDUuMjIxMiAzNi41MzY5QzQ2LjczNjMgMzcuMTY0NSA0OC4zNjAxIDM3LjQ4NzUgNTAgMzcuNDg3NUM1My4zMTE5IDM3LjQ4NzUgNTYuNDg4MSAzNi4xNzE4IDU4LjgzIDMzLjgyOTlDNjEuMTcxOSAzMS40ODgxIDYyLjQ4NzUgMjguMzExOCA2Mi40ODc1IDI1QzYyLjQ4NzUgMjEuNjg4MSA2MS4xNzE5IDE4LjUxMTggNTguODMgMTYuMTdDNTYuNDg4MSAxMy44MjgxIDUzLjMxMTkgMTIuNTEyNSA1MCAxMi41MTI1Wk03OC4xMjUgMTguNzVDNzUuNjM4NiAxOC43NSA3My4yNTQgMTkuNzM3NyA3MS40OTU5IDIxLjQ5NThDNjkuNzM3NyAyMy4yNTQgNjguNzUgMjUuNjM4NSA2OC43NSAyOC4xMjVDNjguNzUgMzAuNjExNCA2OS43Mzc3IDMyLjk5NTkgNzEuNDk1OSAzNC43NTQxQzczLjI1NCAzNi41MTIyIDc1LjYzODYgMzcuNSA3OC4xMjUgMzcuNUM4MC42MTE0IDM3LjUgODIuOTk2IDM2LjUxMjIgODQuNzU0MSAzNC43NTQxQzg2LjUxMjMgMzIuOTk1OSA4Ny41IDMwLjYxMTQgODcuNSAyOC4xMjVDODcuNSAyNS42Mzg1IDg2LjUxMjMgMjMuMjU0IDg0Ljc1NDEgMjEuNDk1OEM4Mi45OTYgMTkuNzM3NyA4MC42MTE0IDE4Ljc1IDc4LjEyNSAxOC43NVpNMjEuODc1IDE4Ljc1QzE5LjM4ODYgMTguNzUgMTcuMDA0IDE5LjczNzcgMTUuMjQ1OSAyMS40OTU4QzEzLjQ4NzcgMjMuMjU0IDEyLjUgMjUuNjM4NSAxMi41IDI4LjEyNUMxMi41IDMwLjYxMTQgMTMuNDg3NyAzMi45OTU5IDE1LjI0NTkgMzQuNzU0MUMxNy4wMDQgMzYuNTEyMiAxOS4zODg2IDM3LjUgMjEuODc1IDM3LjVDMjQuMzYxNCAzNy41IDI2Ljc0NiAzNi41MTIyIDI4LjUwNDEgMzQuNzU0MUMzMC4yNjIzIDMyLjk5NTkgMzEuMjUgMzAuNjExNCAzMS4yNSAyOC4xMjVDMzEuMjUgMjUuNjM4NSAzMC4yNjIzIDIzLjI1NCAyOC41MDQxIDIxLjQ5NThDMjYuNzQ2IDE5LjczNzcgMjQuMzYxNCAxOC43NSAyMS44NzUgMTguNzVaTTMxLjI1IDQ5Ljk1NjJDMzEuMjYxNiA0OC4zMDYyIDMxLjkyNTEgNDYuNzI3NyAzMy4wOTYgNDUuNTY1QzM0LjI2NjggNDQuNDAyNCAzNS44NDk5IDQzLjc0OTkgMzcuNSA0My43NUg2Mi41QzY0LjE1NzYgNDMuNzUgNjUuNzQ3MyA0NC40MDg0IDY2LjkxOTQgNDUuNTgwNUM2OC4wOTE1IDQ2Ljc1MjYgNjguNzUgNDguMzQyNCA2OC43NSA1MFY2OC43NUM2OC43NTE2IDcwLjcxNzEgNjguNDQzNyA3Mi42NzIzIDY3LjgzNzUgNzQuNTQzN0M2Ni40NTM2IDc4Ljc4NTYgNjMuNjAyOCA4Mi4zOTUyIDU5Ljc5NyA4NC43MjQzQzU1Ljk5MTIgODcuMDUzNCA1MS40Nzk3IDg3Ljk0OTUgNDcuMDcyNyA4Ny4yNTE3QzQyLjY2NTYgODYuNTUzOCAzOC42NTE4IDg0LjMwNzcgMzUuNzUxOCA4MC45MTY3QzMyLjg1MTggNzcuNTI1NyAzMS4yNTU2IDczLjIxMTkgMzEuMjUgNjguNzVWNDkuOTU2MlpNMjUgNTBDMjUgNDcuNzE4NyAyNS42MDYzIDQ1LjU4NzUgMjYuNjc1IDQzLjc1SDEyLjVDMTAuODQyNCA0My43NSA5LjI1MjY5IDQ0LjQwODQgOC4wODA1OCA0NS41ODA1QzYuOTA4NDggNDYuNzUyNiA2LjI1IDQ4LjM0MjQgNi4yNSA1MFY2NS42MjVDNi4yNDkxNSA2OC4xODMxIDYuODc2NDEgNzAuNzAyMyA4LjA3NjcxIDcyLjk2MTRDOS4yNzcgNzUuMjIwNSAxMS4wMTM2IDc3LjE1MDMgMTMuMTM0IDc4LjU4MTRDMTUuMjU0NCA4MC4wMTI1IDE3LjY5MzggODAuOTAxMSAyMC4yMzc5IDgxLjE2OTFDMjIuNzgxOSA4MS40MzcyIDI1LjM1MjkgODEuMDc2NSAyNy43MjUgODAuMTE4N0MyNS45MyA3Ni41OTU5IDI0Ljk5NjEgNzIuNjk3NSAyNSA2OC43NDM3VjUwWk03NSA1MFY2OC43NUM3NSA3Mi44NDM3IDc0LjAxODggNzYuNzA2MiA3Mi4yNzUgODAuMTE4N0M3NC42NDcxIDgxLjA3NjUgNzcuMjE4MSA4MS40MzcyIDc5Ljc2MjEgODEuMTY5MUM4Mi4zMDYyIDgwLjkwMTEgODQuNzQ1NiA4MC4wMTI1IDg2Ljg2NiA3OC41ODE0Qzg4Ljk4NjQgNzcuMTUwMyA5MC43MjMgNzUuMjIwNSA5MS45MjMzIDcyLjk2MTRDOTMuMTIzNiA3MC43MDIzIDkzLjc1MDkgNjguMTgzMSA5My43NSA2NS42MjVWNTBDOTMuNzUgNDguMzQyNCA5My4wOTE1IDQ2Ljc1MjYgOTEuOTE5NCA0NS41ODA1QzkwLjc0NzMgNDQuNDA4NCA4OS4xNTc2IDQzLjc1IDg3LjUgNDMuNzVINzMuMzI1Qzc0LjM4NzUgNDUuNTg3NSA3NSA0Ny43MTg3IDc1IDUwWiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K" alt="Team">
+    <img class="nav-icon nav-icon--2" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik01Ni4wNDE3IDEwLjU1NDJDNTQuMzUxIDkuMTI5MjcgNTIuMjExMSA4LjM0Nzc4IDUwIDguMzQ3NzhDNDcuNzg4OSA4LjM0Nzc4IDQ1LjY0OSA5LjEyOTI3IDQzLjk1ODMgMTAuNTU0MkwxNS44MzMzIDM0LjI4MzNDMTQuNzg5NCAzNS4xNjMyIDEzLjk1MDIgMzYuMjYwMyAxMy4zNzQ1IDM3LjQ5ODJDMTIuNzk4NyAzOC43MzYxIDEyLjUwMDMgNDAuMDg0OCAxMi41IDQxLjQ1VjgwLjIyMDhDMTIuNSA4NC4yNDU4IDE1Ljc2NjcgODcuNTEyNSAxOS43OTE3IDg3LjUxMjVIMzIuMjkxN0MzNC4yMjU1IDg3LjUxMjUgMzYuMDgwMiA4Ni43NDQzIDM3LjQ0NzcgODUuMzc2OEMzOC44MTUxIDg0LjAwOTQgMzkuNTgzMyA4Mi4xNTQ3IDM5LjU4MzMgODAuMjIwOFY2My41NDE3QzM5LjU4MzMgNjAuNzA4MyA0MS44NDE3IDU4LjQwODMgNDQuNjU0MiA1OC4zMzMzSDU1LjM0NThDNTYuNzAzMiA1OC4zNjkyIDU3Ljk5MjkgNTguOTMzNyA1OC45NDAxIDU5LjkwNjZDNTkuODg3MyA2MC44Nzk1IDYwLjQxNzEgNjIuMTgzOCA2MC40MTY3IDYzLjU0MTdWODAuMjIwOEM2MC40MTY3IDg0LjI0NTggNjMuNjgzMyA4Ny41MTI1IDY3LjcwODMgODcuNTEyNUg4MC4yMDgzQzgyLjE0MjIgODcuNTEyNSA4My45OTY5IDg2Ljc0NDMgODUuMzY0MyA4NS4zNzY4Qzg2LjczMTggODQuMDA5NCA4Ny41IDgyLjE1NDcgODcuNSA4MC4yMjA4VjQxLjQ0NThDODcuNDk5NyA0MC4wODA2IDg3LjIwMTMgMzguNzMxOSA4Ni42MjU1IDM3LjQ5NDFDODYuMDQ5OCAzNi4yNTYyIDg1LjIxMDYgMzUuMTU5IDg0LjE2NjcgMzQuMjc5Mkw1Ni4wNDE3IDEwLjU1NDJaIiBmaWxsPSIjMzMzMzMzIi8+Cjwvc3ZnPgo=" alt="Home">
+    <img class="nav-icon nav-icon--3" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODIiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODIgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNNTMuMDQzMyAxOC43MjEyQzU4LjIxMyAxOC43MjEyIDYyLjQwMzggMTQuNTMwMyA2Mi40MDM4IDkuMzYwNThDNjIuNDAzOCA0LjE5MDgxIDU4LjIxMyAwIDUzLjA0MzMgMEM0Ny44NzM1IDAgNDMuNjgyNyA0LjE5MDgxIDQzLjY4MjcgOS4zNjA1OEM0My42ODI3IDE0LjUzMDMgNDcuODczNSAxOC43MjEyIDUzLjA0MzMgMTguNzIxMlpNMjIuMTcwOSA2MS45MTA1TDE5LjI4NDcgNjguNjQyM0g2LjI0MDM4QzIuNzk0NTIgNjguNjQyMyAwIDcxLjQzNjggMCA3NC44ODI3QzAgNzguMzI4NSAyLjc5NDUyIDgxLjEyMzEgNi4yNDAzOCA4MS4xMjMxSDIxLjM0NDFDMjUuMDk4IDgxLjEyMzEgMjguNDc3NiA3OC44OTIxIDI5Ljk0NiA3NS40NTAyTDMxLjY2MDIgNzEuNDQ4NUwyOS41Nzk0IDcwLjIxOTlDMjYuMjAxOCA2OC4yMjUgMjMuNzE3NCA2NS4yNzI1IDIyLjE3MDkgNjEuOTEwNVpNNzQuODg0NiA0My42ODA3SDY2LjI5ODJMNjEuMjE2MiAzMy4yOTY0QzU4Ljc3ODYgMjguMzEzOCA1NC4zMDMgMjQuNjcxIDQ5LjE2ODQgMjMuMzYyNEwzNS4zMDY5IDE5LjIzOTlDMjkuNzg4MSAxNy45MTM4IDI0LjA0MTEgMTkuMTMyNiAxOS41NDIyIDIyLjU4MjRMMTEuODA2IDI4LjUxMjdDOS4wNzAwMSAzMC42MDkxIDguNTUxMjggMzQuNTI0OSAxMC42NTE2IDM3LjI2MUMxMi43NTE4IDM5Ljk5NyAxNi42NjU3IDQwLjUwOTggMTkuMzk5OCAzOC40MTU0TDI3LjEzOTggMzIuNDg1MUMyOC42MzU2IDMxLjMzNjUgMzAuNTQwOCAzMC45MjUgMzIuMDY3OCAzMS4yODc3TDM0LjkzNDUgMzIuMTM5OUwyNy42MjkzIDQ5LjE4MkMyNS4xNjgyIDU0LjkzMSAyNy4zNzM4IDYxLjY2NDggMzIuNzU4MSA2NC44NDM1TDQ5LjMzMDIgNzQuNjI3Mkw0My45NzMzIDkxLjczNTZDNDIuOTQzNiA5NS4wMjM1IDQ0Ljc3NDggOTguNTI0IDQ4LjA2MjcgOTkuNTUzNkM0OC42ODQ4IDk5Ljc0ODcgNDkuMzEyNyA5OS44NDIzIDQ5LjkzMDkgOTkuODQyM0M1Mi41ODUgOTkuODQyMyA1NS4wNDYgOTguMTMyIDU1Ljg4MjYgOTUuNDY0Mkw2Mi4wNTI4IDc1Ljc1NjNDNjMuMjA1MyA3MS43MDU5IDYxLjQ4OTIgNjcuMzU1MiA1Ny44MzI4IDY1LjE0OTZMNDUuODkwMiA1OC4xMDE5TDUxLjk5NjEgNDIuODM2M0w1NS45NDg5IDUwLjkxNTdDNTcuNTA5IDU0LjEwMjIgNjAuODA4NyA1Ni4xNTk2IDY0LjM1NTkgNTYuMTU5Nkg3NC44ODQ2Qzc4LjMzMDUgNTYuMTU5NiA4MS4xMjUgNTMuMzY1IDgxLjEyNSA0OS45MTkyQzgxLjEyNSA0Ni40NzMzIDc4LjMzMDUgNDMuNjgwNyA3NC44ODQ2IDQzLjY4MDdaIiBmaWxsPSIjMzMzMzMzIi8+Cjwvc3ZnPgo=" alt="Running">
+    <img class="nav-icon nav-icon--4" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjUgNTQuMTY2Nkg4LjMzMzMyQzUuODMzMzIgNTQuMTY2NiA0LjE2NjY2IDU1LjgzMzMgNC4xNjY2NiA1OC4zMzMzVjkxLjY2NjZDNC4xNjY2NiA5NC4xNjY2IDUuODMzMzIgOTUuODMzMyA4LjMzMzMyIDk1LjgzMzNIMjVDMjcuNSA5NS44MzMzIDI5LjE2NjcgOTQuMTY2NiAyOS4xNjY3IDkxLjY2NjZWNTguMzMzM0MyOS4xNjY3IDU1LjgzMzMgMjcuNSA1NC4xNjY2IDI1IDU0LjE2NjZaTTkxLjY2NjcgMzcuNUg3NUM3Mi41IDM3LjUgNzAuODMzMyAzOS4xNjY2IDcwLjgzMzMgNDEuNjY2NlY5MS42NjY2QzcwLjgzMzMgOTQuMTY2NiA3Mi41IDk1LjgzMzMgNzUgOTUuODMzM0g5MS42NjY3Qzk0LjE2NjcgOTUuODMzMyA5NS44MzMzIDk0LjE2NjYgOTUuODMzMyA5MS42NjY2VjQxLjY2NjZDOTUuODMzMyAzOS4xNjY2IDk0LjE2NjcgMzcuNSA5MS42NjY3IDM3LjVaTTU4LjMzMzMgNC4xNjY2M0g0MS42NjY3QzM5LjE2NjcgNC4xNjY2MyAzNy41IDUuODMzMjkgMzcuNSA4LjMzMzI5VjkxLjY2NjZDMzcuNSA5NC4xNjY2IDM5LjE2NjcgOTUuODMzMyA0MS42NjY3IDk1LjgzMzNINTguMzMzM0M2MC44MzMzIDk1LjgzMzMgNjIuNSA5NC4xNjY2IDYyLjUgOTEuNjY2NlY4LjMzMzI5QzYyLjUgNS44MzMyOSA2MC44MzMzIDQuMTY2NjMgNTguMzMzMyA0LjE2NjYzWiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K" alt="Stats">
+    <img class="nav-icon nav-icon--5" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMzMuMzMzMyAyOS4xNjY3QzMzLjMzMzMgMjQuNzQ2NCAzNS4wODkzIDIwLjUwNzIgMzguMjE0OSAxNy4zODE2QzQxLjM0MDUgMTQuMjU1OSA0NS41Nzk3IDEyLjUgNTAgMTIuNUM1NC40MjAzIDEyLjUgNTguNjU5NSAxNC4yNTU5IDYxLjc4NTEgMTcuMzgxNkM2NC45MTA3IDIwLjUwNzIgNjYuNjY2NyAyNC43NDY0IDY2LjY2NjcgMjkuMTY2N0M2Ni42NjY3IDMzLjU4NjkgNjQuOTEwNyAzNy44MjYyIDYxLjc4NTEgNDAuOTUxOEM1OC42NTk1IDQ0LjA3NzQgNTQuNDIwMyA0NS44MzMzIDUwIDQ1LjgzMzNDNDUuNTc5NyA0NS44MzMzIDQxLjM0MDUgNDQuMDc3NCAzOC4yMTQ5IDQwLjk1MThDMzUuMDg5MyAzNy44MjYyIDMzLjMzMzMgMzMuNTg2OSAzMy4zMzMzIDI5LjE2NjdaTTMzLjMzMzMgNTQuMTY2N0MyNy44MDggNTQuMTY2NyAyMi41MDg5IDU2LjM2MTYgMTguNjAxOSA2MC4yNjg2QzE0LjY5NDkgNjQuMTc1NiAxMi41IDY5LjQ3NDcgMTIuNSA3NUMxMi41IDc4LjMxNTIgMTMuODE3IDgxLjQ5NDYgMTYuMTYxMiA4My44Mzg4QzE4LjUwNTQgODYuMTgzIDIxLjY4NDggODcuNSAyNSA4Ny41SDc1Qzc4LjMxNTIgODcuNSA4MS40OTQ2IDg2LjE4MyA4My44Mzg4IDgzLjgzODhDODYuMTgzIDgxLjQ5NDYgODcuNSA3OC4zMTUyIDg3LjUgNzVDODcuNSA2OS40NzQ3IDg1LjMwNTEgNjQuMTc1NiA4MS4zOTgxIDYwLjI2ODZDNzcuNDkxMSA1Ni4zNjE2IDcyLjE5MiA1NC4xNjY3IDY2LjY2NjcgNTQuMTY2N0gzMy4zMzMzWiIgZmlsbD0iIzMzMzMzMyIvPgo8L3N2Zz4K" alt="Profile">
+
+  </div>
+  </div>
+
+</body>
+</html>
