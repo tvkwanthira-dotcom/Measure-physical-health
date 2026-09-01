@@ -1,0 +1,9 @@
+{
+  "name": "water-reminder-script",
+  "private": true,
+  "description": "สคริปต์แจ้งเตือนดื่มน้ำ รันผ่าน GitHub Actions ตามตารางเวลา",
+  "main": "water-reminder.js",
+  "dependencies": {
+    "firebase-admin": "^12.1.0"
+  }
+}
