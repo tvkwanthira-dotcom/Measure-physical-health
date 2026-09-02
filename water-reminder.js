@@ -72,32 +72,47 @@ async function main() {
 
   usersSnap.forEach((docSnap) => {
     const data = docSnap.data();
-    if (!data.fcmToken) return; // ผู้ใช้คนนี้ยังไม่ได้เปิดแจ้งเตือน
+
+    // รองรับทั้งของเก่า (fcmToken เดี่ยว จากตอนที่ยังเก็บได้แค่เครื่องเดียว)
+    // และของใหม่ (fcmTokens array รองรับหลายเครื่องพร้อมกัน เช่น คอม + มือถือ)
+    // เอามารวมกันแล้วตัดตัวซ้ำทิ้งด้วย Set
+    const tokens = [...new Set([
+      ...(Array.isArray(data.fcmTokens) ? data.fcmTokens : []),
+      ...(data.fcmToken ? [data.fcmToken] : []),
+    ])];
+    if (tokens.length === 0) return; // ผู้ใช้คนนี้ยังไม่ได้เปิดแจ้งเตือนเครื่องไหนเลย
 
     const waterToday = data.waterDate === dateKey ? (data.water || 0) : 0;
     if (waterToday >= expectedByNow || waterToday >= WATER_GOAL) return; // ทันเป้า/ครบแล้ว
 
-    jobs.push(
-      messaging
-        .send({
-          token: data.fcmToken,
-          notification: {
-            title: '💧 ดื่มน้ำหน่อยนะ',
-            body: `วันนี้ดื่มไปแล้ว ${waterToday}/${WATER_GOAL} แก้ว ลองดื่มเพิ่มอีกสักแก้วมั้ย?`,
-          },
-          webpush: { fcmOptions: { link: '/community.html' } },
-        })
-        .catch((err) => {
-          console.error(`ส่งแจ้งเตือนให้ผู้ใช้ ${docSnap.id} ไม่สำเร็จ:`, err.message);
-          if (err.code === 'messaging/registration-token-not-registered') {
-            return docSnap.ref.update({ fcmToken: null });
-          }
-        })
-    );
+    const notification = {
+      title: '💧 ดื่มน้ำหน่อยนะ',
+      body: `วันนี้ดื่มไปแล้ว ${waterToday}/${WATER_GOAL} แก้ว ลองดื่มเพิ่มอีกสักแก้วมั้ย?`,
+    };
+
+    // ส่งแยกทีละ token (ไม่ใช่ multicast เดียว) เพื่อให้รู้ชัดว่า "เครื่องไหน"
+    // ส่งไม่ผ่านบ้าง จะได้ตัดทิ้งเฉพาะเครื่องนั้นเครื่องเดียว เครื่องอื่นไม่โดนกระทบ
+    tokens.forEach((token) => {
+      jobs.push(
+        messaging
+          .send({ token, notification, webpush: { fcmOptions: { link: '/community.html' } } })
+          .catch((err) => {
+            console.error(`ส่งแจ้งเตือนให้ผู้ใช้ ${docSnap.id} (เครื่อง ...${token.slice(-8)}) ไม่สำเร็จ:`, err.message);
+            const deadToken =
+              err.code === 'messaging/registration-token-not-registered' ||
+              err.code === 'messaging/invalid-registration-token';
+            if (!deadToken) return;
+            // token หมดอายุ/ถอนการติดตั้งแล้ว -- ลบออกจากทั้งสองฟิลด์ ไม่ต้องรอ error รอบหน้า
+            const update = { fcmTokens: admin.firestore.FieldValue.arrayRemove(token) };
+            if (data.fcmToken === token) update.fcmToken = null;
+            return docSnap.ref.update(update);
+          })
+      );
+    });
   });
 
   await Promise.all(jobs);
-  console.log(`เช็คจุด ${checkpoint.hour}:00 (คาดหวัง ${expectedByNow}/${WATER_GOAL} แก้ว) — ส่งแจ้งเตือนไป ${jobs.length} คน`);
+  console.log(`เช็คจุด ${checkpoint.hour}:00 (คาดหวัง ${expectedByNow}/${WATER_GOAL} แก้ว) — ส่งแจ้งเตือนไป ${jobs.length} เครื่อง`);
 }
 
 main()
