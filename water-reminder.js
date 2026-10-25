@@ -3,7 +3,7 @@
 // deploy ได้ แม้ปริมาณใช้งานจะไม่มีค่าใช้จ่ายจริงก็ตาม)
 //
 // GitHub Actions จะรันไฟล์นี้ตามตารางเวลาใน .github/workflows/water-reminder.yml
-// (ตั้งไว้ให้ตรงกับ 10:00 / 13:00 / 16:00 / 19:00 เวลาไทยพอดีแล้ว) พอรันแต่ละครั้ง
+// (ตั้งไว้ให้ตรงกับ 09, 11, 12, 14, 15, 17, 18, 20 น. เวลาไทย = 8 รอบ รอบละ 1 แก้ว) พอรันแต่ละครั้ง
 // สคริปต์นี้จะเช็คทุกคนที่เปิดแจ้งเตือนไว้ ว่าดื่มน้ำวันนี้ตามเป้าหมายทันมั้ย
 // ถ้าไม่ทันจะส่ง push แจ้งเตือนไปหา (logic เดียวกับ functions/index.js เป๊ะ
 // ต่างแค่วิธี "ปลุก" ให้ทำงานตามเวลา)
@@ -30,11 +30,15 @@ const WATER_GOAL = 8; // ต้องตรงกับจำนวนแก้�
 
 // ชม. เวลาไทยที่เช็ค -> สัดส่วนที่ "ควร" ดื่มไปแล้ว ณ เวลานั้น (เผื่อ workflow
 // รันคลาดเวลาไปบ้าง ใช้ช่วง ±30 นาทีจับคู่กับจุดที่ใกล้ที่สุดแทนการเป๊ะเป๊ะ)
-const PACE_CHECKPOINTS = [
-  { hour: 10, expectedRatio: 0.25 }, // สาย -- ควรดื่มไปแล้วอย่างน้อย 2 แก้ว
-  { hour: 13, expectedRatio: 0.5 },  // เที่ยง -- อย่างน้อย 4 แก้ว
-  { hour: 16, expectedRatio: 0.75 }, // บ่ายแก่ -- อย่างน้อย 6 แก้ว
-  { hour: 19, expectedRatio: 1.0 },  // เย็น -- ควรครบ 8 แก้วแล้ว
+const PACE_CHECKPOINTS = [   // ชม. เวลาไทย -> จำนวนแก้วที่ "ควร" ดื่มไปแล้ว (แก้ตัวเลขตรงนี้เพื่อเปลี่ยนเวลา)
+  { hour: 9,  cups: 1 },
+  { hour: 11, cups: 2 },
+  { hour: 12, cups: 3 },
+  { hour: 14, cups: 4 },
+  { hour: 15, cups: 5 },
+  { hour: 17, cups: 6 },
+  { hour: 18, cups: 7 },
+  { hour: 20, cups: 8 },   // รอบสุดท้าย ควรครบ 8 แก้ว
 ];
 
 function nowInBangkok() {
@@ -47,15 +51,9 @@ function nowInBangkok() {
 }
 
 function closestCheckpoint(hour) {
-  // เลือกจุดที่ชั่วโมงห่างน้อยที่สุด (กันเวลา GitHub Actions รันคลาดไปบ้าง
-  // เช่น cron บอก 03:00 UTC แต่จริงๆ รันตอน 03:04 UTC ก็ยังจับคู่ถูกจุดอยู่)
-  let best = null;
-  let bestDiff = Infinity;
-  for (const cp of PACE_CHECKPOINTS) {
-    const diff = Math.abs(cp.hour - hour);
-    if (diff < bestDiff) { bestDiff = diff; best = cp; }
-  }
-  return bestDiff <= 1 ? best : null; // ห่างเกิน 1 ชม. ถือว่าไม่ตรงจุดไหนเลย ข้าม
+  // จับคู่ตามชั่วโมงเป๊ะ (รอบอยู่ห่างกันแค่ 1-2 ชม. ถ้าเผื่อ ±1 จะจับผิดรอบ)
+  // GitHub Actions รันช้าได้ไม่กี่นาที ยังอยู่ในชั่วโมงเดิมอยู่ ไม่กระทบ
+  return PACE_CHECKPOINTS.find((cp) => cp.hour === hour) || null;
 }
 
 async function main() {
@@ -67,7 +65,7 @@ async function main() {
   }
 
   const usersSnap = await db.collection('users').get();
-  const expectedByNow = Math.ceil(WATER_GOAL * checkpoint.expectedRatio);
+  const expectedByNow = Math.min(WATER_GOAL, checkpoint.cups);
   const jobs = [];
 
   usersSnap.forEach((docSnap) => {
@@ -86,8 +84,8 @@ async function main() {
     if (waterToday >= expectedByNow || waterToday >= WATER_GOAL) return; // ทันเป้า/ครบแล้ว
 
     const notification = {
-      title: '💧 ดื่มน้ำหน่อยนะ',
-      body: `วันนี้ดื่มไปแล้ว ${waterToday}/${WATER_GOAL} แก้ว ลองดื่มเพิ่มอีกสักแก้วมั้ย?`,
+      title: 'ถึงเวลาดื่มน้ำแล้ว!!!!!',
+      body: `(${waterToday}/${WATER_GOAL} แก้ว) 💧`,
     };
 
     // ส่งแยกทีละ token (ไม่ใช่ multicast เดียว) เพื่อให้รู้ชัดว่า "เครื่องไหน"
@@ -95,7 +93,7 @@ async function main() {
     tokens.forEach((token) => {
       jobs.push(
         messaging
-          .send({ token, notification, webpush: { fcmOptions: { link: '/community.html' } } })
+          .send({ token, notification, webpush: { fcmOptions: { link: 'https://measure-physical-health.web.app/app.html#community.html' } } })
           .catch((err) => {
             console.error(`ส่งแจ้งเตือนให้ผู้ใช้ ${docSnap.id} (เครื่อง ...${token.slice(-8)}) ไม่สำเร็จ:`, err.message);
             const deadToken =
